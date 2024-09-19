@@ -1,7 +1,84 @@
 # cUrl_URL = curl -v -X GET "https://api.adzuna.com/v1/api/jobs/za/search/1?app_id=95c5a470&app_key=937982dda4b2b82969e27656088b9e0d&results_per_page=1&what_and=software%20engineering"
+import requests
 
 # TODO: loop through the first 5 pages or so to get results, getting all 100 posts on each page
 # TODO: work on formatting string to required url string
+
+def main():
+    jobs = getJobs()           # get jobs from the database
+    # print("FOUND ++++++> ", jobs)
+    # print(type(jobs))
+
+    # print("FOUND IT ++++> ", jobs.get("results"))
+
+
+    filtered = filterJobs(jobs)
+
+    
+    
+
+
+
+
+
+def getJobs():
+
+    url = "https://api.adzuna.com/v1/api/jobs/za/search/1"
+    # app_id = "95c5a470"
+    # app_key = "937982dda4b2b82969e27656088b9e0d"
+    # results_per_page = 20
+    # what_and = "software%20engineering"
+
+    params = {"app_id":"95c5a470", "app_key":"937982dda4b2b82969e27656088b9e0d", "results_per_page": 20, "what_and":"software engineering"}
+    result = requests.get(url, params=params)
+
+    return result.json().get("results")
+
+
+
+
+def filterJobs(jobs):
+    resultingList = []                  # create a list for jobs matching the user location 
+
+
+    for job in jobs:
+        resultJobs = matchJobLocation("Johannesburg", job)
+        if resultJobs:
+            resultingList.append(job)
+
+
+    for r in resultingList:
+        print("@@@@@@", r)
+        
+        
+        
+        # print("=======> ", job)
+
+    # print("=======> ", resultJobs)
+    pass
+
+
+def matchJobLocation(target_location, result):
+
+    job_location_str = result.get("location").get("display_name")
+    # print("###########", job_location_str)
+    
+    res = "".join(job_location_str)                                           # get the location of the post
+    location = res.split(",")[0]
+
+    if location == target_location:
+        return True
+
+    return False
+
+
+
+    
+
+    pass
+
+
+
 
 
 
@@ -32,8 +109,5 @@ results = [{"latitude":-26.703988,"longitude":27.079099,"created":"2022-10-28T10
 
 
 
-for r in results:
-    print(r)
-    print()
-    print()
-
+if __name__ == "__main__":
+    main()
